@@ -5,6 +5,15 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 
+// Health check endpoint - placed before middleware to avoid any interference
+app.get('/health', (req, res) => {
+    res.status(200).json({ 
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 app.use((req,res,next)=>{
     res.header("Access-Control-Allow-Origin", process.env.ORIGIN);
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -26,14 +35,5 @@ app.use(cookieParser());
 import router from './routes/user.route.js';
 
 app.use("/api/v1/user" , router)
-
-// Health check endpoint to prevent server from sleeping
-app.get('/health', (req, res) => {
-    res.status(200).json({ 
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-    });
-});
 
 export default app;
